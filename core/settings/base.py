@@ -46,14 +46,23 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
+    # 1) CorsMiddleware идёт первым
+    'corsheaders.middleware.CorsMiddleware',
+
+    # 2) Затем стандартные Django-мидлвары безопасности и сессий
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    # 3) После них — CommonMiddleware, чтобы он прочитал CORS-заголовки
     'django.middleware.common.CommonMiddleware',
+
+    # 4) Дальше — остальные
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
