@@ -35,7 +35,8 @@ INSTALLED_APPS = [
     
     'rest_framework',
     'rest_framework_gis',
-    'leaflet',  
+    'leaflet',
+    'django_crontab',
     'corsheaders',
     'rest_framework.authtoken',           
     'djoser',
@@ -55,6 +56,10 @@ LEAFLET_CONFIG = {
     'MIN_ZOOM': 5,
     'MAX_ZOOM': 18,
 }
+
+CRONJOBS = [
+    ('*/5 * * * *', 'django.core.management.call_command', ['refresh_ivent_status']),
+]
 
 
 MIDDLEWARE = [

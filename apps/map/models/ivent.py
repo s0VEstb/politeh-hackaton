@@ -2,6 +2,7 @@ from django.contrib.gis.db import models
 from django.utils import timezone
 import pytz
 import datetime
+from ..managers import IventQuerySet
 
 
 DISTRICT_CHOICES = (
@@ -55,6 +56,7 @@ class Ivent(models.Model):
         default='planned',
         verbose_name="Статус",
     )
+    objects = IventQuerySet.as_manager()
     area = models.PolygonField(srid=4326, verbose_name="Площадь")
 
     def save(self, *args, **kwargs):

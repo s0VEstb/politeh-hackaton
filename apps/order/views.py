@@ -62,7 +62,7 @@ class DistrictReportStatusCountView(APIView):
                 resolved=Count('id', filter=Q(problem_status='resolved')),
             )
             result.append({
-                "country": label,
+                "district": label,
                 "unresolved": counts["unresolved"],
                 "resolved": counts["resolved"],
             })
