@@ -1,1 +1,0 @@
-*/5 * * * * root python /app/manage.py refresh_ivent_status >> /var/log/cron.log 2>&1
