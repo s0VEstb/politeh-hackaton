@@ -57,9 +57,7 @@ LEAFLET_CONFIG = {
     'MAX_ZOOM': 18,
 }
 
-CRONJOBS = [
-    ('*/5 * * * *', 'django.core.management.call_command', ['refresh_ivent_status']),
-]
+
 
 
 MIDDLEWARE = [
