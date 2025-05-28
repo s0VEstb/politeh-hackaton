@@ -8,10 +8,13 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 from apps.users.views import LogoutView
+from apps.users.views import ActivationGetView
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    path('api/v1/map/', include('apps.map.urls')),  # URL для приложения map
 
     path('api/auth/', include('djoser.urls')),                            
     path('api/auth/', include('djoser.urls.jwt')),
@@ -25,6 +28,12 @@ urlpatterns = [
 
     # ReDoc (опционально)
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+
+    path(
+        'api/auth/activate/<str:uid>/<str:token>/',
+        ActivationGetView.as_view(),
+        name='user-activation'
+    ),
 
 ]
 

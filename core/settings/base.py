@@ -24,6 +24,7 @@ else:
 
 INSTALLED_APPS = [
     'jazzmin',
+    'django.contrib.gis',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -33,17 +34,27 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'rest_framework',
+    'rest_framework_gis',
+    'leaflet',  
     'corsheaders',
     'rest_framework.authtoken',           
     'djoser',
     'drf_spectacular',
     'rest_framework_simplejwt.token_blacklist',
 
-
+    'apps.map',
     'apps.users',
 ]
 
 AUTH_USER_MODEL = 'users.User'
+
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (42.8806, 74.6174),
+    'DEFAULT_ZOOM': 12,
+    'MIN_ZOOM': 5,
+    'MAX_ZOOM': 18,
+}
+
 
 MIDDLEWARE = [
     # 1) CorsMiddleware идёт первым
@@ -105,13 +116,17 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'USER_CREATE_PASSWORD_RETYPE': True,
     'SEND_ACTIVATION_EMAIL': True,
-    'ACTIVATION_URL': 'activate/{uid}/{token}/',  
+    'ACTIVATION_URL': 'api/auth/activate/{uid}/{token}/',  
     'SERIALIZERS': {
         'user_create': 'apps.users.serializers.UserCreateSerializer',
         'user': 'apps.users.serializers.UserSerializer',
         'activation': 'djoser.serializers.ActivationSerializer',
         'current_user': 'apps.users.serializers.UserSerializer',
 
+    },
+    'VIEWS': {
+        # Заменяем стандартную вьюху «activation» на нашу
+        'activation': 'apps.users.views.ActivationGetView',
     },
 }
 
@@ -156,7 +171,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Bishkek'
 
 USE_I18N = True
 

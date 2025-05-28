@@ -2,16 +2,22 @@ from .base import BASE_DIR
 from decouple import config
 import os
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': config('POSTGRES_DB'),
         'USER': config('POSTGRES_USER'),
         'PASSWORD': config('POSTGRES_PASSWORD'),
         'HOST': config('POSTGRES_HOST'),
-        'PORT': config('POSTGRES_PORT')
+        'PORT': config('POSTGRES_PORT', '5432'),
     }
 }
+
+GEOS_LIBRARY_PATH = None
+GDAL_LIBRARY_PATH = None
+import os
+os.environ['PROJ_LIB'] = '/usr/share/proj'
 
 
 ALLOWED_HOSTS = ['*']
