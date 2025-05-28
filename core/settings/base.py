@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
     'apps.map',
     'apps.users',
+    'apps.order',
 ]
 
 AUTH_USER_MODEL = 'users.User'

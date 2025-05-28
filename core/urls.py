@@ -14,7 +14,8 @@ from apps.users.views import ActivationGetView
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('api/v1/map/', include('apps.map.urls')),  # URL для приложения map
+    path('api/v1/map/', include('apps.map.urls')),
+    path('api/v1/order/', include('apps.order.urls')),
 
     path('api/auth/', include('djoser.urls')),                            
     path('api/auth/', include('djoser.urls.jwt')),

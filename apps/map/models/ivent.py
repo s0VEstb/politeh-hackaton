@@ -23,8 +23,8 @@ STATUS_CHOICES = (
 
 
 class Ivent(models.Model):
-    city          = models.CharField(max_length=100, verbose_name="Город")
-    district      = models.CharField(
+    city = models.CharField(max_length=100, verbose_name="Город")
+    district = models.CharField(
         max_length=20,
         choices=DISTRICT_CHOICES,
         default='pervomaysky',
@@ -38,24 +38,24 @@ class Ivent(models.Model):
         verbose_name="Тип ресурса",
         help_text="Выберите тип ресурса (вода, электричество, газ)",
     )
-    timezone      = models.CharField(
+    timezone = models.CharField(
         max_length=50,
         verbose_name="Часовой пояс",
         help_text="IANA (например, Europe/Moscow)",
         default='Asia/Bishkek',
     )
-    planned_dt    = models.DateTimeField(verbose_name="Плановая дата и время")
-    restored_dt   = models.DateTimeField(
+    planned_dt = models.DateTimeField(verbose_name="Плановая дата и время")
+    restored_dt = models.DateTimeField(
         verbose_name="Время восстановления",
         null=True, blank=True,
     )
-    status        = models.CharField(
+    status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
         default='planned',
         verbose_name="Статус",
     )
-    area          = models.PolygonField(srid=4326, verbose_name="Площадь")
+    area = models.PolygonField(srid=4326, verbose_name="Площадь")
 
     def save(self, *args, **kwargs):
         try:
@@ -80,6 +80,12 @@ class Ivent(models.Model):
 
         super().save(*args, **kwargs)
 
+    def __str__(self):
+        return f"{self.city} - {self.resource} ({self.district})"
+    
+    class Meta:
+        verbose_name = "Событие"
+        verbose_name_plural = "События"
 
 
 class IventStreet(models.Model):
