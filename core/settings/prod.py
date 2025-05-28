@@ -11,7 +11,13 @@ DATABASES = {
         'PASSWORD': config('POSTGRES_PASSWORD'),
         'HOST': config('POSTGRES_HOST'),
         'PORT': config('POSTGRES_PORT', '5432'),
+        'OPTIONS': {
+            'options': '-c search_path=public',
+        },
+        # ВАЖНО: запретить Django создавать расширения
+        'POSTGIS_MANAGE_EXTENSIONS': False,
     }
+    
 }
 
 GEOS_LIBRARY_PATH = None
