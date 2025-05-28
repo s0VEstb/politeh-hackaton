@@ -8,7 +8,6 @@ from apps.map.models import DISTRICT_CHOICES, RESOURCE_TYPE_CHOICES
 
 PROBLEM_STATUS = [
     ('unresolved', 'Не решена'),
-    ('in_progress', 'В процессе'),
     ('resolved', 'Решена'),
 ]
 

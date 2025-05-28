@@ -4,6 +4,11 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from rest_framework import generics, permissions
 from .serializers import ReportSerializer, ReportLikeSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.db.models import Count, Q
+from apps.order.models import Report
+from apps.map.models import DISTRICT_CHOICES
 
 
 class ReportListCreateView(generics.ListCreateAPIView):
@@ -44,3 +49,22 @@ class ReportLikeDeleteView(generics.DestroyAPIView):
         if obj.user != self.request.user:
             raise PermissionDenied("Вы можете удалять только свои лайки.")
         return obj
+
+
+class DistrictReportStatusCountView(APIView):
+    def get(self, request):
+        result = []
+
+        for key, label in DISTRICT_CHOICES:
+            reports = Report.objects.filter(district=key)
+            counts = reports.aggregate(
+                unresolved=Count('id', filter=Q(problem_status='unresolved')),
+                resolved=Count('id', filter=Q(problem_status='resolved')),
+            )
+            result.append({
+                "country": label,
+                "unresolved": counts["unresolved"],
+                "resolved": counts["resolved"],
+            })
+
+        return Response(result)
