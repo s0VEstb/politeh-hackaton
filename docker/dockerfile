@@ -2,36 +2,45 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Устанавливаем системные зависимости, включая cron
+# Устанавливаем системные зависимости, включая cron и необходимые dev-библиотеки для сборки пакетов
 RUN apt-get update && apt-get install -y \
     gdal-bin \
     libgdal-dev \
     binutils \
     libproj-dev \
     build-essential \
+    libffi-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    libpq-dev \
     cron \
     && rm -rf /var/lib/apt/lists/*
 
+# Копируем файл зависимостей и ставим пакеты Python
 COPY ../requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Копируем весь проект
 COPY ../ .
 
-# Копируем cron-файл в систему
+# Копируем cron-джобу в нужное место
 COPY docker/crontab /etc/cron.d/refresh-cron
 
-# Делаем его исполняемым и активируем
-RUN chmod 0644 /etc/cron.d/refresh-cron && \
-    crontab /etc/cron.d/refresh-cron
+# Устанавливаем правильные права на cron-файл
+RUN chmod 0644 /etc/cron.d/refresh-cron
 
-# Лог файл для cron
-RUN touch /var/log/cron.log
+# Добавляем cron задачу в crontab
+RUN crontab /etc/cron.d/refresh-cron
 
-# Разрешаем запуск скрипта
+# Создаем лог файл для cron и даем права
+RUN touch /var/log/cron.log && chmod 0666 /var/log/cron.log
+
+# Делаем скрипт запуска исполняемым
 RUN chmod +x ./docker/start_back.sh
 
+# Если понадобится, задаем переменную окружения для GDAL
 ENV GDAL_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/libgdal.so
 
-# Запускаем и cron, и Django
+# Запускаем cron в фоновом режиме и затем стартуем Django
 CMD ["sh", "-c", "cron && ./docker/start_back.sh"]
