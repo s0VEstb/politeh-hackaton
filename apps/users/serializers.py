@@ -17,7 +17,7 @@ class UserCreateSerializer(BaseCreate):
             're_password',
             'first_name',
             'last_name',
-            'middle_name',
+            'addres',
         )
         extra_kwargs = {
             'username':   {'required': True},
@@ -26,7 +26,7 @@ class UserCreateSerializer(BaseCreate):
             're_password':{'write_only': True, 'required': True},
             'first_name': {'required': True},
             'last_name':  {'required': True},
-            'middle_name':{'required': True},
+            'addres':     {'required': True},
         }
 
     def validate(self, data):
@@ -44,6 +44,6 @@ class UserSerializer(BaseUser):
             'username',
             'first_name',
             'last_name',
-            'middle_name',
+            'addres',
             'is_verified',
         )

@@ -4,11 +4,11 @@ from django.db import models
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     is_verified = models.BooleanField(default=False)
-    middle_name = models.CharField(
+    addres = models.CharField(
         max_length=150,
         blank=True,        # необязательное
-        verbose_name='Отчество'
+        verbose_name='Аддрес',
     )
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'addres']
