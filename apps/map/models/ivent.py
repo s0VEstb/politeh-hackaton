@@ -42,7 +42,7 @@ class Ivent(models.Model):
         max_length=50,
         verbose_name="Часовой пояс",
         help_text="IANA (например, Europe/Moscow)",
-        default='UTC',
+        default='Asia/Bishkek',
     )
     planned_dt    = models.DateTimeField(verbose_name="Плановая дата и время")
     restored_dt   = models.DateTimeField(
