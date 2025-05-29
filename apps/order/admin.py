@@ -21,29 +21,32 @@ class ReportAdmin(LeafletGeoAdmin):
         'resource',
         'problem_status',
         'spam_score',
+        'requires_moderation',
         'is_spam_display',
         'likes_count',
         'created_at',
     )
-    list_filter = ('problem_status', 'district', 'resource')
+    list_filter = ('requires_moderation', 'problem_status', 'district', 'resource')
     search_fields = ('user__username', 'description', 'address')
     list_editable = ('problem_status',)
-    readonly_fields = ('created_at', 'is_spam_display', 'spam_score', 'likes_count')
+    readonly_fields = ('created_at', 'spam_score', 'requires_moderation', 'is_spam_display', 'likes_count')
     fieldsets = (
         (None, {
             'fields': ('user', 'district', 'address', 'resource', 'description', 'area')
         }),
         ('Статус и модерация', {
-            'fields': ('problem_status', 'status_updated_at', 'spam_score', 'is_spam_display')
+            'fields': ('problem_status', 'status_updated_at', 'spam_score', 'requires_moderation', 'is_spam_display')
         }),
         ('Системная информация', {
             'fields': ('created_at', 'likes_count')
         }),
     )
     inlines = [ReportLikeInline]
+    actions = ['mark_as_not_spam', 'mark_as_spam']
 
     def is_spam_display(self, obj):
         return obj.is_spam
+    
     is_spam_display.boolean = True
     is_spam_display.short_description = 'Спам?'
 
@@ -51,7 +54,17 @@ class ReportAdmin(LeafletGeoAdmin):
         return obj.likes.count()
     likes_count.short_description = 'Лайков'
 
+    @admin.action(description="Пометить как не спам")
+    def mark_as_not_spam(self, request, queryset):
+        queryset.update(requires_moderation=False)
+
+    @admin.action(description="Удалить как спам")
+    def mark_as_spam(self, request, queryset):
+        for report in queryset:
+            report.delete()
+
     def save_model(self, request, obj, form, change):
+        # При изменении статуса отмечаем время обновления
         if change and 'problem_status' in form.changed_data:
             from django.utils import timezone
             obj.status_updated_at = timezone.now()

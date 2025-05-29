@@ -4,6 +4,17 @@ import pytz
 import datetime
 from django.conf import settings
 from apps.map.models import DISTRICT_CHOICES, RESOURCE_TYPE_CHOICES
+from core.services.spam_detection import predict_spam_score
+from django.core.exceptions import ValidationError
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
 
 
 PROBLEM_STATUS = [
@@ -37,18 +48,24 @@ class Report(models.Model):
     description = models.TextField(
         verbose_name='Описание проблемы'
     )
-    created_at = models.DateTimeField(
-        default=timezone.now,
-        verbose_name='Дата и время создания'
-    )
     area = models.PolygonField(
         srid=4326,
         verbose_name='Площадь',
         help_text='Полигон, описывающий область проблемы'
     )
+    created_at = models.DateTimeField(
+        default=timezone.now,
+        verbose_name='Дата и время создания'
+    )
+
+    # эти поля заполняются через сериализатор
     spam_score = models.FloatField(
         default=0.0,
         verbose_name='Оценка спама (0–1)'
+    )
+    requires_moderation = models.BooleanField(
+        default=False,
+        verbose_name='Требует модерации'
     )
     problem_status = models.CharField(
         max_length=20,
@@ -64,11 +81,12 @@ class Report(models.Model):
 
     @property
     def is_spam(self):
+        # Например, считать спамом если оценка выше 0.8
         return self.spam_score > 0.8
-    
+
     def __str__(self):
-        return f"Report by {self.user.username} in {self.district} for {self.resource}"
-    
+        return f"Report by {self.user.username} in {self.district}"
+
     class Meta:
         verbose_name = "Отчет"
         verbose_name_plural = "Отчеты"
@@ -76,9 +94,20 @@ class Report(models.Model):
 
 
 class ReportLike(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='likes')
-    report = models.ForeignKey('Report', on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='likes'
+    )
+    report = models.ForeignKey(
+        Report,
+        on_delete=models.CASCADE,
+        related_name='likes'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'report')  # чтобы один пользователь мог лайкнуть отчет только один раз
+        unique_together = ('user', 'report')
+
+    def __str__(self):
+        return f"{self.user.username} likes {self.report.id}"
