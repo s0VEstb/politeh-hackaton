@@ -4,7 +4,7 @@ from .views import (
     ReportRetrieveUpdateView,
     ReportLikeCreateView,
     ReportLikeDeleteView,
-    DistrictReportStatusCountView,
+    ResourceByDistrictStatusCountView,
 )
 
 urlpatterns = [
@@ -16,6 +16,6 @@ urlpatterns = [
     path('reports/likes/', ReportLikeCreateView.as_view(), name='report-like-create'),    # POST поставить лайк
     path('reports/likes/<int:id>/', ReportLikeDeleteView.as_view(), name='report-like-delete'),  # DELETE убрать лайк
 
-    path('district-report-counts/', DistrictReportStatusCountView.as_view(), name='district-report-counts'),
+    path('district-report-counts/', ResourceByDistrictStatusCountView.as_view(), name='district-report-counts'),
 ]
 

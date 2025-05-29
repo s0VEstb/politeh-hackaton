@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from django.db.models import Count, Q
 from apps.order.models import Report
 from apps.map.models import DISTRICT_CHOICES
+from apps.map.models import RESOURCE_TYPE_CHOICES
 
 
 class ReportListCreateView(generics.ListCreateAPIView):
@@ -51,20 +52,28 @@ class ReportLikeDeleteView(generics.DestroyAPIView):
         return obj
 
 
-class DistrictReportStatusCountView(APIView):
+class ResourceByDistrictStatusCountView(APIView):
     def get(self, request):
         result = []
 
-        for key, label in DISTRICT_CHOICES:
-            reports = Report.objects.filter(district=key)
-            counts = reports.aggregate(
-                unresolved=Count('id', filter=Q(problem_status='unresolved')),
-                resolved=Count('id', filter=Q(problem_status='resolved')),
-            )
+        # Для каждого типа ресурса соберём статистику по всем районам
+        for res_key, res_label in RESOURCE_TYPE_CHOICES:
+            districts_data = []
+            for dist_key, dist_label in DISTRICT_CHOICES:
+                qs = Report.objects.filter(resource=res_key, district=dist_key)
+                counts = qs.aggregate(
+                    unresolved=Count('id', filter=Q(problem_status='unresolved')),
+                    resolved=Count('id', filter=Q(problem_status='resolved')),
+                )
+                districts_data.append({
+                    "district": dist_label,
+                    "unresolved": counts["unresolved"],
+                    "resolved": counts["resolved"],
+                })
+
             result.append({
-                "district": label,
-                "unresolved": counts["unresolved"],
-                "resolved": counts["resolved"],
+                "resource": res_label,
+                "districts": districts_data
             })
 
         return Response(result)
