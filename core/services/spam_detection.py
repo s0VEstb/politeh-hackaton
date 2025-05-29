@@ -14,7 +14,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-GEMINI_API_KEY = config('GEMINI_API_KEY')
+GEMINI_API_KEY = 'AIzaSyDdrIzAAeDGGBkHYG5KDqvWR8DdBuyuXVU'
 
 def predict_spam_score(description: str) -> float:
     """
